@@ -1,7 +1,0 @@
-#Tue Aug 23 10:25:12 IST 2016
-base.0=/Users/ken.mccullagh/AndroidStudioProjects/BusFinder/BusTimer/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_3b19eb25a59e6e55e508cbb3962bc4624f4ce086
-renamed.1=classes2.dex
-renamed.0=classes.dex
-file.1=/Users/ken.mccullagh/AndroidStudioProjects/BusFinder/BusTimer/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_6f1d41035dae1c7f3fd6458b2fb2cec29f6c41ec/classes.dex
-base.1=/Users/ken.mccullagh/AndroidStudioProjects/BusFinder/BusTimer/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_6f1d41035dae1c7f3fd6458b2fb2cec29f6c41ec
-file.0=/Users/ken.mccullagh/AndroidStudioProjects/BusFinder/BusTimer/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_3b19eb25a59e6e55e508cbb3962bc4624f4ce086/classes.dex
