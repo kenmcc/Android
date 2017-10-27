@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -16,23 +17,38 @@ public class NewAppWidgetConfigureActivity extends Activity {
 
     private static final String PREFS_NAME = "com.kenm.mymqttclient.NewAppWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
-    int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-    EditText mAppWidgetText;
+    public int mBrokerAddressId = R.id.brokerAddress;
+    public int mMqttTopicId = R.id.mqttTopic;
+
+    EditText mBrokerAddress;
+    EditText mMqttTopic;
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             final Context context = NewAppWidgetConfigureActivity.this;
 
             // When the button is clicked, store the string locally
-            String widgetText = mAppWidgetText.getText().toString();
-            saveTitlePref(context, mAppWidgetId, widgetText);
+            String brokerAddressText = mBrokerAddress.getText().toString();
+            String mqttTopicText = mMqttTopic.getText().toString();
+
+            Log.d("mBrokerAddressId", String.valueOf(mBrokerAddressId));
+            Log.d("mMqttTopicId", String.valueOf(mMqttTopicId));
+
+            saveTitlePref(context, mBrokerAddressId, brokerAddressText);
+            saveTitlePref(context, mMqttTopicId, mqttTopicText);
+
+
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            NewAppWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+            NewAppWidget.updateAppWidget(context, appWidgetManager, mBrokerAddressId);
+            //NewAppWidget.updateAppWidget(context, appWidgetManager, mMqttTopicId);
+
 
             // Make sure we pass back the original appWidgetId
             Intent resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mBrokerAddressId);
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mMqttTopicId);
+
             setResult(RESULT_OK, resultValue);
             finish();
         }
@@ -76,24 +92,27 @@ public class NewAppWidgetConfigureActivity extends Activity {
         setResult(RESULT_CANCELED);
 
         setContentView(R.layout.new_app_widget_configure);
-        mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
+        mBrokerAddress = (EditText) findViewById(R.id.brokerAddress);
+        mMqttTopic = (EditText) findViewById(R.id.mqttTopic);
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            mAppWidgetId = extras.getInt(
+            mBrokerAddressId = extras.getInt(
+                    AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+            mMqttTopicId = extras.getInt(
                     AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
         // If this activity was started with an intent without an app widget ID, finish with an error.
-        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (mBrokerAddressId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
             return;
         }
 
-        mAppWidgetText.setText(loadTitlePref(NewAppWidgetConfigureActivity.this, mAppWidgetId));
+        mBrokerAddress.setText(loadTitlePref(NewAppWidgetConfigureActivity.this, mBrokerAddressId));
     }
 }
 

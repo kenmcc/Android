@@ -16,7 +16,8 @@ import org.eclipse.paho.client.mqttv3.*;
 public class MqttHelper {
     public MqttAndroidClient mqttAndroidClient;
 
-    final String serverUri = "tcp://10.113.198.140:1883";
+    //final String serverUri = "tcp://10.113.198.140:1883";
+    final String serverUri = "tcp://192.168.2.177:1883";
 
     final String clientId = "ExampleAndroidClient";
     final String subscriptionTopic = "sensor/+";
@@ -73,7 +74,7 @@ public class MqttHelper {
                     disconnectedBufferOptions.setPersistBuffer(false);
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
-                    subscribeToTopic();
+                    //subscribeToTopic();
                 }
 
                 @Override
@@ -109,13 +110,25 @@ public class MqttHelper {
         }
     }
 
-    public void postToTopic()
+    public void disconnect()
     {
         try {
-            byte[] p = "abba".getBytes();
+        mqttAndroidClient.disconnect();
+        //mqttAndroidClient.close();
+        mqttAndroidClient = null;
+        }catch (MqttException ex) {
+            System.err.println("Exceptionst disconnecting");
+            ex.printStackTrace();
+        }
+    }
+    public void postToTopic(String topic, String message)
+    {
+        try {
 
-            MqttMessage m = new MqttMessage(p);
-            mqttAndroidClient.publish("sensoranswer/remote", m);
+            MqttMessage m = new MqttMessage(message.getBytes());
+            mqttAndroidClient.publish(topic, m);
+           //mqttAndroidClient.disconnect();
+           // mqttAndroidClient.close();
         }catch (MqttException ex) {
             System.err.println("Exceptionst subscribing");
             ex.printStackTrace();

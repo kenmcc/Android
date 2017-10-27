@@ -22,49 +22,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //moveTaskToBack(true);
+        //setContentView(R.layout.activity_main);
 
        // dataReceived = (TextView) findViewById(R.id.dataReceived);
 
-        Log.d("Starting MQTT","MQTT");
-        startMqtt();
-        Log.d("Started", "MQTT");
+
 
     }
 
-    private void startMqtt(){
-        mqttHelper = new MqttHelper(getApplicationContext());
-        mqttHelper.setCallback(new MqttCallbackExtended() {
-            @Override
-            public void connectComplete(boolean b, String s) {
 
-            }
-
-            @Override
-            public void connectionLost(Throwable throwable) {
-
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                Log.w("Debug",mqttMessage.toString());
-               // dataReceived.setText(mqttMessage.toString());
-                mqttHelper.postToTopic();
-
-                Intent intent = new Intent(getApplicationContext(), NewAppWidget.class);
-                intent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
-                int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), NewAppWidget.class));
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
-                intent.putExtra("title", mqttMessage.toString());
-                sendBroadcast(intent);
-
-
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
-            }
-        });
-    }
 }

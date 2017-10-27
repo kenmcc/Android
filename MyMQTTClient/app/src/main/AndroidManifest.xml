@@ -38,6 +38,12 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".MyMqttPublishService"
+            android:exported="false" />
+
+        <activity android:name=".MqttActivity" ></activity>
     </application>
 
 </manifest>
