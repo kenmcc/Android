@@ -49,13 +49,16 @@ public class MyMqttPublishService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
+    public static void startActionFoo(Context context, String brokerString, String param1, String param2) {
         Log.d("startActionFoo", "now");
 
         Intent i = new Intent(context, MqttActivity.class);
         i.putExtra("topic", param1);
         i.putExtra("message", param2);
+        i.putExtra("broker", brokerString);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         context.startActivity(i);
 
     }
@@ -67,10 +70,10 @@ public class MyMqttPublishService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
+    public static void startActionBaz(Context context, String brokerString, String topicString, String param2) {
         Intent intent = new Intent(context, MyMqttPublishService.class);
         intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
+        intent.putExtra(EXTRA_PARAM1, topicString);
         intent.putExtra(EXTRA_PARAM2, param2);
         context.startService(intent);
     }

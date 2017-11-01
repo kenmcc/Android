@@ -3,6 +3,6 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="configure">MQTT Broker</string>
     <string name="add_widget">Add widget</string>
-    <string name="mqtt_topic">mobile/presence</string>
+    <string name="mqtt_topic">[PhoneName]</string>
     <string name="mqtt_broker">192.168.1.1</string>
 </resources>

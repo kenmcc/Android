@@ -24,24 +24,26 @@ public class MqttActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Intent i = getIntent();
+        String broker = i.getStringExtra("broker");
         String message = i.getStringExtra("message");
         String topic = i.getStringExtra("topic");
         Log.d("Starting MQTT","MQTT");
-        startMqtt(topic,message);
+        startMqtt(broker, topic,message);
         Log.d("Started", "MQTT");
-        //finish();
+        finish();
     }
 
-    private void startMqtt(String topic, String message){
-        final String t = topic;
-        final String m = message;
+    private void startMqtt(String inbroker, String intopic, String inmessage){
+        final String topic = intopic;
+        final String message = inmessage;
+        final String broker = inbroker;
         final Activity act = this;
 
-        mqttHelper = new MqttHelper(getApplicationContext());
+        mqttHelper = new MqttHelper(getApplicationContext(), broker);
         mqttHelper.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean b, String s) {
-                mqttHelper.postToTopic(t, m);
+                mqttHelper.postToTopic(topic, message);
                 mqttHelper.disconnect();
                 Log.d("posted", "topic");
                 finish();
@@ -54,24 +56,13 @@ public class MqttActivity extends AppCompatActivity {
 
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                Log.w("Debug",mqttMessage.toString());
-                // dataReceived.setText(mqttMessage.toString());
-                //mqttHelper.postToTopic();
-
-                Intent intent = new Intent(getApplicationContext(), NewAppWidget.class);
-                intent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
-                int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), NewAppWidget.class));
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
-                intent.putExtra("title", mqttMessage.toString());
-                sendBroadcast(intent);
-
 
 
             }
 
             @Override
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                Log.d("delivery", "complete");
+                Log.d("Delivery", "complete");
 
                 act.finishAffinity();
 

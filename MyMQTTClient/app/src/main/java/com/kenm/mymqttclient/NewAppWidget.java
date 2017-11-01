@@ -17,6 +17,10 @@ import android.widget.Toast;
 public class NewAppWidget extends AppWidgetProvider {
 
     static String appString = "";
+    static String brokerString= "127.0.0.1";
+    static String brokerPort = "1883";
+    static String topicString = "";
+    static String ACTION_RELOAD="RELOAD_WIDGET";
     public void setMessage(String st)
     {
         appString = st;
@@ -27,35 +31,43 @@ public class NewAppWidget extends AppWidgetProvider {
         Log.d("CREATING", "config activity " + appWidgetId);
         CharSequence widgetText = NewAppWidgetConfigureActivity.loadTitlePref(context, R.id.brokerAddress);
         CharSequence topicText = NewAppWidgetConfigureActivity.loadTitlePref(context, R.id.mqttTopic);
-        Log.d("BrokerAddress", String.valueOf(widgetText));
-        Log.d("TopicText", String.valueOf(topicText));
+        brokerString = String.valueOf(widgetText);
+        topicString = String.valueOf(topicText);
 
-        // Construct the RemoteViews object
-        //RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
-        //views.setTextViewText(R.id.appwidget_text, widgetText);
+        Log.d("brokerString = ", brokerString);
+        Log.d("topicString", topicString);
 
-        // Instruct the widget manager to update the widget
-        //appWidgetManager.updateAppWidget(appWidgetId, views);
 
-        Log.d("Updated", "updatedaaa aa a a a ");
+
+        Log.d("Updated", "updatedaaa aa a a a "+ brokerString);
     }
     static int x = 1;
     static boolean firstTime = true;
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int count = appWidgetIds.length;
-        Log.d("state", "onUpdate");
+        String theMessage = "";
+        Log.d("state", "onUpdate count = " + count);
         for (int i = 0; i < count; i++) {
             int widgetId = appWidgetIds[i];
             Log.d("state", String.valueOf(widgetId));
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.new_app_widget);
             if (x%2 == 0) {
+                Log.d("Setting Home", "begin");
                 remoteViews.setImageViewResource(R.id.imageButton, R.drawable.home);
+                theMessage = "Home";
+                Log.d("Setting Home", "end");
+
             }
             else
             {
+                Log.d("Setting Away", "begin");
+
                 remoteViews.setImageViewResource(R.id.imageButton, R.drawable.nothome);
+                theMessage = "Away";
+                Log.d("Setting Away", "end");
+
             }
             Intent intent = new Intent(context, NewAppWidget.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -65,20 +77,26 @@ public class NewAppWidget extends AppWidgetProvider {
             remoteViews.setOnClickPendingIntent(R.id.imageButton, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
+            Log.d("loop", "done");
+
 
         }
+        Log.d("abba", "1");
         if (!firstTime) {
             Log.d("Starting service", "");
-            MyMqttPublishService.startActionFoo(context, "honey", "I'm home");
+            String theBroker = "tcp://"+brokerString + ":" + brokerPort;
+            String theTopic = "HoneyImHome/"+topicString;
+            MyMqttPublishService.startActionFoo(context, theBroker,theTopic, theMessage);
         }
+        Log.d("abba", "2");
         firstTime = false;
         x += 1;
-
+        Log.d("abba", "3");
         Log.d("Service started","");
 
-
-
     }
+
+
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
@@ -98,6 +116,22 @@ public class NewAppWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+//
+        final String theAction = intent.getAction();
+        Log.d("ACTION = ", theAction);
+        // do your stuff here on ACTION_RELOAD
+        if (theAction == ACTION_RELOAD) {
+            firstTime = true;
+            brokerString = intent.getStringExtra("broker");
+            topicString = intent.getStringExtra("topic");
+            brokerPort = intent.getStringExtra("port");
+            Log.d("Setting brokerAddress to ", brokerString);
+        }
 
+
+        super.onReceive(context, intent);
+    }
 }
 

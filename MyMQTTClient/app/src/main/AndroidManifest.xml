@@ -13,19 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <receiver android:name=".NewAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE"/> -->
             </intent-filter>
 
             <meta-data
@@ -43,7 +36,8 @@
             android:name=".MyMqttPublishService"
             android:exported="false" />
 
-        <activity android:name=".MqttActivity" ></activity>
+        <activity android:name=".MqttActivity" />
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>

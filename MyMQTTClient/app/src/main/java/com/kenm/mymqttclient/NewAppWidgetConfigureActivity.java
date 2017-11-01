@@ -17,11 +17,15 @@ public class NewAppWidgetConfigureActivity extends Activity {
 
     private static final String PREFS_NAME = "com.kenm.mymqttclient.NewAppWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
-    public int mBrokerAddressId = R.id.brokerAddress;
-    public int mMqttTopicId = R.id.mqttTopic;
+    public static int mBrokerAddressId = R.id.brokerAddress;
+    public static int mMqttTopicId = R.id.mqttTopic;
+    public static int mBrokerPortId = R.id.brokerPort;
+    int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     EditText mBrokerAddress;
     EditText mMqttTopic;
+    EditText mBrokerPort;
+
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             final Context context = NewAppWidgetConfigureActivity.this;
@@ -29,27 +33,22 @@ public class NewAppWidgetConfigureActivity extends Activity {
             // When the button is clicked, store the string locally
             String brokerAddressText = mBrokerAddress.getText().toString();
             String mqttTopicText = mMqttTopic.getText().toString();
-
-            Log.d("mBrokerAddressId", String.valueOf(mBrokerAddressId));
-            Log.d("mMqttTopicId", String.valueOf(mMqttTopicId));
+            String mqttBrokerPortText = mBrokerPort.getText().toString();
 
             saveTitlePref(context, mBrokerAddressId, brokerAddressText);
             saveTitlePref(context, mMqttTopicId, mqttTopicText);
+            saveTitlePref(context, mBrokerPortId, mqttBrokerPortText);
 
 
-
-            // It is the responsibility of the configuration activity to update the app widget
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            NewAppWidget.updateAppWidget(context, appWidgetManager, mBrokerAddressId);
-            //NewAppWidget.updateAppWidget(context, appWidgetManager, mMqttTopicId);
-
-
-            // Make sure we pass back the original appWidgetId
-            Intent resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mBrokerAddressId);
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mMqttTopicId);
-
+            //  Make sure we pass back the original appWidgetId
+            Intent resultValue = new Intent(getApplicationContext(), NewAppWidget.class);
+            resultValue.setAction(NewAppWidget.ACTION_RELOAD);
+            resultValue.putExtra("broker", brokerAddressText);
+            resultValue.putExtra("topic", mqttTopicText);
+            resultValue.putExtra("port", mqttBrokerPortText);
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
             setResult(RESULT_OK, resultValue);
+            sendBroadcast(resultValue);
             finish();
         }
     };
@@ -58,12 +57,14 @@ public class NewAppWidgetConfigureActivity extends Activity {
         super();
     }
 
-    // Write the prefix to the SharedPreferences object for this widget
-    static void saveTitlePref(Context context, int appWidgetId, String text) {
+
+    static void saveTitlePref(Context context, int widgetId, String value)
+    {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
-        prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
+        prefs.putString(PREF_PREFIX_KEY + widgetId, value);
         prefs.apply();
     }
+
 
     // Read the prefix from the SharedPreferences object for this widget.
     // If there is no preference saved, get the default from a resource
@@ -89,20 +90,19 @@ public class NewAppWidgetConfigureActivity extends Activity {
 
         // Set the result to CANCELED.  This will cause the widget host to cancel
         // out of the widget placement if the user presses the back button.
-        setResult(RESULT_CANCELED);
+        setResult(RESULT_OK);
 
         setContentView(R.layout.new_app_widget_configure);
         mBrokerAddress = (EditText) findViewById(R.id.brokerAddress);
         mMqttTopic = (EditText) findViewById(R.id.mqttTopic);
+        mBrokerPort = (EditText) findViewById(R.id.brokerPort);
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            mBrokerAddressId = extras.getInt(
-                    AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-            mMqttTopicId = extras.getInt(
+            mAppWidgetId = extras.getInt(
                     AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
@@ -111,8 +111,17 @@ public class NewAppWidgetConfigureActivity extends Activity {
             finish();
             return;
         }
-
+        Log.d("Setting the fields", "begin");
         mBrokerAddress.setText(loadTitlePref(NewAppWidgetConfigureActivity.this, mBrokerAddressId));
+        mMqttTopic.setText(loadTitlePref(NewAppWidgetConfigureActivity.this, mMqttTopicId));
+        mBrokerPort.setText(loadTitlePref(NewAppWidgetConfigureActivity.this, mBrokerPortId));
+        Log.d("Done setting", "done");
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        Log.d("BACK", "pressed");
     }
 }
 
