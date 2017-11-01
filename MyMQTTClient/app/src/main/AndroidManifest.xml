@@ -18,7 +18,8 @@
         <receiver android:name=".NewAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <!-- <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE"/> -->
+                <action android:name="android.net.conn.CONECTIVITY_CHANGE"/>
+                <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE"/>
             </intent-filter>
 
             <meta-data

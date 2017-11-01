@@ -3,8 +3,10 @@ package com.kenm.mymqttclient;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -21,6 +23,7 @@ public class NewAppWidget extends AppWidgetProvider {
     static String brokerPort = "1883";
     static String topicString = "";
     static String ACTION_RELOAD="RELOAD_WIDGET";
+    static boolean connected = false;
     public void setMessage(String st)
     {
         appString = st;
@@ -53,14 +56,14 @@ public class NewAppWidget extends AppWidgetProvider {
             Log.d("state", String.valueOf(widgetId));
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.new_app_widget);
-            if (x%2 == 0) {
+            //if (x%2 == 0) {
                 Log.d("Setting Home", "begin");
                 remoteViews.setImageViewResource(R.id.imageButton, R.drawable.home);
                 theMessage = "Home";
                 Log.d("Setting Home", "end");
 
-            }
-            else
+//            }
+  /*          else
             {
                 Log.d("Setting Away", "begin");
 
@@ -68,7 +71,7 @@ public class NewAppWidget extends AppWidgetProvider {
                 theMessage = "Away";
                 Log.d("Setting Away", "end");
 
-            }
+            }*/
             Intent intent = new Intent(context, NewAppWidget.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
@@ -128,6 +131,23 @@ public class NewAppWidget extends AppWidgetProvider {
             topicString = intent.getStringExtra("topic");
             brokerPort = intent.getStringExtra("port");
             Log.d("Setting brokerAddress to ", brokerString);
+        }
+        else if (theAction.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+            // save the connected state to get in onUpdate
+            this.connected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
+
+            if (!this.connected)
+            {
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+
+                RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+                        R.layout.new_app_widget);
+                remoteViews.setImageViewResource(R.id.imageButton, R.drawable.nothome);
+            }
+            // update all widgets
+            //int appWidgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(context, NewAppWidget.class));
+            //onUpdate(context, appWidgetManager, appWidgetIds);
+
         }
 
 
